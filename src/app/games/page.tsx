@@ -73,7 +73,7 @@ const Title = styled.h2`
   margin-bottom: 2rem;
 `;
 
-const GameAddButton = styled.div`
+const GameAddButton = styled.button`
   display: block;
   width: 100%;
   max-width: 200px;
@@ -85,6 +85,7 @@ const GameAddButton = styled.div`
   font-weight: 600;
   text-align: center;
   border-radius: 5px;
+  border: none;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
 
