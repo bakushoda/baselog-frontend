@@ -1,33 +1,40 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import styled from "styled-components";
-import api from "@lib/api";
-import { useRouter } from "next/navigation";
-import type { LoginResponse } from "types/types";
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import api from '@lib/api';
+import { useRouter } from 'next/navigation';
+import type { LoginResponse } from 'types/types';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage('');
+
     try {
-      const response = await api.post<LoginResponse>("/login", {
-        email,
-        password,
-      });
-      localStorage.setItem("token", response.data.token);
-      router.push("/games");
+      const response = await api.post<LoginResponse>(
+        '/login',
+        {
+          email,
+          password,
+        }
+      );
+      localStorage.setItem('token', response.data.token);
+      router.push('/games');
     } catch (error) {
-      console.error("Login failed", error);
+      console.error('Login failed', error);
+      setErrorMessage('ログインに失敗しました。');
     }
   };
 
   return (
     <LoginContainer>
-      <Title>Login</Title>
+      <Title>ログイン</Title>
       <Form onSubmit={handleLogin}>
         <Input
           type="email"
@@ -41,7 +48,10 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button type="submit">Login</Button>
+        {errorMessage && (
+          <ErrorText>{errorMessage}</ErrorText>
+        )}
+        <Button type="submit">ログイン</Button>
       </Form>
     </LoginContainer>
   );
@@ -99,4 +109,10 @@ const Button = styled.button`
   &:hover {
     background-color: #0056b3;
   }
+`;
+
+const ErrorText = styled.p`
+  color: red;
+  margin-bottom: 15px;
+  font-size: 14px;
 `;
