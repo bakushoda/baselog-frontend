@@ -5,7 +5,6 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// リクエスト時に認証トークンを追加するインターセプター
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
