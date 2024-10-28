@@ -86,7 +86,6 @@ const GameAddButton = styled.div`
   text-align: center;
   border-radius: 5px;
   cursor: pointer;
-  text-decoration: none;
   transition: background-color 0.3s, transform 0.2s;
 
   &:hover {
