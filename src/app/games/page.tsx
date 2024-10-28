@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import api from '@lib/api';
 import type { Game } from 'types/types';
+import Link from 'next/link';
 
 export default function GamesPage() {
   const [games, setGames] = useState<Game[]>([]);
@@ -24,6 +25,9 @@ export default function GamesPage() {
   return (
     <Container>
       <Title>試合結果一覧</Title>
+      <Link href="/addgame">
+        <GameAddButton>試合を追加</GameAddButton>
+      </Link>
       <Table>
         <thead>
           <TableRowHeader>
@@ -69,6 +73,32 @@ const Title = styled.h2`
   margin-bottom: 2rem;
 `;
 
+const GameAddButton = styled.div`
+  display: block;
+  width: 100%;
+  max-width: 200px;
+  margin: 1.5rem auto;
+  padding: 0.75rem 1rem;
+  background-color: #2563eb;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s, transform 0.2s;
+
+  &:hover {
+    background-color: #1d4ed8;
+  }
+
+  &:active {
+    background-color: #1e3a8a;
+    transform: translateY(0);
+  }
+`;
+
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
@@ -83,7 +113,7 @@ const TableRow = styled.tr`
     background-color: #f3f4f6;
   }
   &:hover {
-    background-color: #EEE;
+    background-color: #eee;
   }
 `;
 
