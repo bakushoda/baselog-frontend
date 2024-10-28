@@ -10,18 +10,21 @@ export default function Home() {
       <Container>
         <Title>Welcome to Baselog</Title>
         <Description>
-          Baselog is a comprehensive platform for managing baseball game statistics. Login to get started!
+          Baselog is a comprehensive platform for managing
+          baseball game statistics. Login or sign up to get
+          started!
         </Description>
 
         <ButtonContainer>
           <StyledLink href="/login">Login</StyledLink>
-          <StyledLink href="/games" color="green">View Games</StyledLink>
-          <StyledLink href="/teams" color="purple">View Teams</StyledLink>
+          <StyledLink href="/register" color="purple">
+            Sign Up
+          </StyledLink>
         </ButtonContainer>
       </Container>
     </Main>
   );
-};
+}
 
 const Main = styled.main`
   display: flex;
@@ -63,7 +66,8 @@ const ButtonContainer = styled.div`
 const StyledLink = styled(Link)<{ color?: string }>`
   display: block;
   padding: 0.75rem 1rem;
-  background-color: ${({ color }) => (color === 'green' ? '#10b981' : color === 'purple' ? '#8b5cf6' : '#3b82f6')};
+  background-color: ${({ color }) =>
+    color === 'purple' ? '#8b5cf6' : '#3b82f6'};
   color: white;
   font-weight: 600;
   border-radius: 4px;
@@ -72,6 +76,7 @@ const StyledLink = styled(Link)<{ color?: string }>`
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: ${({ color }) => (color === 'green' ? '#059669' : color === 'purple' ? '#7c3aed' : '#2563eb')};
+    background-color: ${({ color }) =>
+      color === 'purple' ? '#7c3aed' : '#2563eb'};
   }
 `;
