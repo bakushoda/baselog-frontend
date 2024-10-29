@@ -69,19 +69,19 @@ export default function AddGamePage() {
           />
         </Label>
         <Label>
-          Home Team:
-          <Input
-            type="text"
-            value={homeTeam}
-            onChange={(e) => setHomeTeam(e.target.value)}
-          />
-        </Label>
-        <Label>
           Away Team:
           <Input
             type="text"
             value={awayTeam}
             onChange={(e) => setAwayTeam(e.target.value)}
+          />
+        </Label>
+        <Label>
+          Home Team:
+          <Input
+            type="text"
+            value={homeTeam}
+            onChange={(e) => setHomeTeam(e.target.value)}
           />
         </Label>
 
