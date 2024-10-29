@@ -35,6 +35,7 @@ export default function GamesPage() {
             <Th>Home</Th>
             <Th>Away</Th>
             <Th>Score</Th>
+            <Th>Actions</Th>
           </TableRowHeader>
         </thead>
         <tbody>
@@ -49,6 +50,23 @@ export default function GamesPage() {
                 {game.home_total_score} -{' '}
                 {game.away_total_score}
               </Td>
+              <Td>
+                <ActionButton color="blue">
+                  <Link href={`/games/detail/${game.id}`}>
+                    詳細
+                  </Link>
+                </ActionButton>
+                <ActionButton color="green">
+                  <Link href={`/games/edit/${game.id}`}>
+                    編集
+                  </Link>
+                </ActionButton>
+                <ActionButton color="red">
+                  <Link href={`/games/delete/${game.id}`}>
+                    削除
+                  </Link>
+                </ActionButton>
+              </Td>
             </TableRow>
           ))}
         </tbody>
@@ -58,9 +76,10 @@ export default function GamesPage() {
 }
 
 const Container = styled.div`
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 1000px;
+  margin: 2rem auto;
   background-color: #f9fafb;
+  padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 `;
@@ -95,7 +114,6 @@ const GameAddButton = styled.button`
 
   &:active {
     background-color: #1e3a8a;
-    transform: translateY(0);
   }
 `;
 
@@ -132,4 +150,41 @@ const Td = styled.td`
   text-align: left;
   color: #1f2937;
   font-size: 1rem;
+`;
+
+const ActionButton = styled.div<{ color: string }>`
+  display: inline-block;
+  margin-right: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background-color: ${({ color }) =>
+    color === 'blue'
+      ? '#2563eb'
+      : color === 'green'
+      ? '#10b981'
+      : '#ef4444'};
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: ${({ color }) =>
+      color === 'blue'
+        ? '#1d4ed8'
+        : color === 'green'
+        ? '#059669'
+        : '#dc2626'};
+  }
+
+  &:active {
+    background-color: ${({ color }) =>
+      color === 'blue'
+        ? '#1e3a8a'
+        : color === 'green'
+        ? '#047857'
+        : '#b91c1c'};
+  }
 `;

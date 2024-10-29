@@ -3,6 +3,7 @@ export interface LoginResponse {
 };
 
 export interface Game {
+    id: number;
     date: string;
     home_team: string;
     away_team: string;
