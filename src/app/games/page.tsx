@@ -22,6 +22,17 @@ export default function GamesPage() {
     fetchGames();
   }, []);
 
+  const handleDelete = async (id: number) => {
+    try {
+      await api.delete(`/games/${id.toString()}`);
+      setGames((prevGames) =>
+        prevGames.filter((game) => game.id !== id)
+      );
+    } catch (error) {
+      console.error('Error deleting game:', error);
+    }
+  };
+
   return (
     <Container>
       <Title>試合結果一覧</Title>
@@ -39,17 +50,14 @@ export default function GamesPage() {
           </TableRowHeader>
         </thead>
         <tbody>
-          {games.map((game, index) => (
-            <TableRow key={index}>
+          {games.map((game) => (
+            <TableRow key={game.id}>
               <Td>
                 {new Date(game.date).toLocaleDateString()}
               </Td>
               <Td>{game.home_team}</Td>
               <Td>{game.away_team}</Td>
-              <Td>
-                {game.home_total_score} -{' '}
-                {game.away_total_score}
-              </Td>
+              <Td>{`${game.home_total_score} - ${game.away_total_score}`}</Td>
               <Td>
                 <ActionButton color="blue">
                   <Link href={`/games/detail/${game.id}`}>
@@ -61,10 +69,11 @@ export default function GamesPage() {
                     編集
                   </Link>
                 </ActionButton>
-                <ActionButton color="red">
-                  <Link href={`/games/delete/${game.id}`}>
-                    削除
-                  </Link>
+                <ActionButton
+                  color="red"
+                  onClick={() => handleDelete(game.id)}
+                >
+                  削除
                 </ActionButton>
               </Td>
             </TableRow>
@@ -152,7 +161,7 @@ const Td = styled.td`
   font-size: 1rem;
 `;
 
-const ActionButton = styled.div<{ color: string }>`
+const ActionButton = styled.button<{ color: string }>`
   display: inline-block;
   margin-right: 0.5rem;
   padding: 0.25rem 0.5rem;
@@ -167,6 +176,7 @@ const ActionButton = styled.div<{ color: string }>`
   font-weight: 600;
   text-align: center;
   border-radius: 4px;
+  border: none;
   cursor: pointer;
   transition: background-color 0.3s;
 
