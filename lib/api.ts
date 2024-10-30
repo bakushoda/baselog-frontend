@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL: 'https://baselog-backend-35d4c46da3f5.herokuapp.com/api',
   withCredentials: true,
 });
 
