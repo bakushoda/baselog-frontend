@@ -1,11 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import api from '@lib/api';
 import { useRouter } from 'next/navigation';
+import type { Game } from 'types/types';
+import { use } from 'react';
 
-export default function AddGamePage() {
+export default function EditGamePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id: gameId } = use(params);
+
   const [date, setDate] = useState('');
   const [homeTeam, setHomeTeam] = useState('');
   const [awayTeam, setAwayTeam] = useState('');
@@ -20,6 +28,67 @@ export default function AddGamePage() {
   );
 
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchGame = async () => {
+      try {
+        const response = await api.get<Game>(
+          `/games/${gameId}`
+        );
+        const gameData = response.data;
+        setDate(gameData.date);
+        setHomeTeam(gameData.home_team);
+        setAwayTeam(gameData.away_team);
+        setHomeTotalScore(gameData.home_total_score);
+        setAwayTotalScore(gameData.away_total_score);
+        setHomeTotalHits(gameData.home_total_hits);
+        setAwayTotalHits(gameData.away_total_hits);
+        setHomeTotalErrors(gameData.home_total_errors);
+        setAwayTotalErrors(gameData.away_total_errors);
+        setInnings(
+          Array.from({ length: 9 }, (_, index) => ({
+            home: gameData[
+              `home_inning_${index + 1}` as keyof Game
+            ] as number,
+            away: gameData[
+              `away_inning_${index + 1}` as keyof Game
+            ] as number,
+          }))
+        );
+      } catch (error) {
+        console.error(
+          'Error fetching game details:',
+          error
+        );
+      }
+    };
+
+    fetchGame();
+  }, [gameId]);
+
+  useEffect(() => {
+    const calculateTotalScores = () => {
+      const homeScore = innings.reduce((sum, inning) => sum + inning.home, 0);
+      const awayScore = innings.reduce((sum, inning) => sum + inning.away, 0);
+      setHomeTotalScore(homeScore);
+      setAwayTotalScore(awayScore);
+    };
+
+    calculateTotalScores();
+  }, [innings]);
+
+  const handleInputChange = (
+    index: number,
+    field: 'home' | 'away',
+    value: string
+  ) => {
+    const newValue = Math.max(0, Number(value));
+    setInnings((prev) => {
+      const updatedInnings = [...prev];
+      updatedInnings[index][field] = newValue;
+      return updatedInnings;
+    });
+  };
 
   const handleSave = async () => {
     try {
@@ -40,25 +109,16 @@ export default function AddGamePage() {
           ])
         ),
       };
-      await api.post('/games', data);
+      await api.put(`/games/${gameId}`, data);
       router.push('/games');
     } catch (error) {
-      console.error('Error has occured:', error);
+      console.error('Error updating game:', error);
     }
-  };
-
-  const calculateTotalscores = () => {
-    setHomeTotalScore(
-      innings.reduce((sum, inning) => sum + inning.home, 0)
-    );
-    setAwayTotalScore(
-      innings.reduce((sum, inning) => sum + inning.away, 0)
-    );
   };
 
   return (
     <Container>
-      <Title>試合情報の追加</Title>
+      <Title>試合結果編集</Title>
       <Form>
         <Label>
           Date:
@@ -69,19 +129,19 @@ export default function AddGamePage() {
           />
         </Label>
         <Label>
-          Away Team:
-          <Input
-            type="text"
-            value={awayTeam}
-            onChange={(e) => setAwayTeam(e.target.value)}
-          />
-        </Label>
-        <Label>
           Home Team:
           <Input
             type="text"
             value={homeTeam}
             onChange={(e) => setHomeTeam(e.target.value)}
+          />
+        </Label>
+        <Label>
+          Away Team:
+          <Input
+            type="text"
+            value={awayTeam}
+            onChange={(e) => setAwayTeam(e.target.value)}
           />
         </Label>
 
@@ -99,69 +159,19 @@ export default function AddGamePage() {
           </thead>
           <tbody>
             <tr>
-              <Td>Away</Td>
-              {innings.map((inning, index) => (
-                <Td key={index}>
-                  <InningInput
-                    type="number"
-                    value={inning.away}
-                    onChange={(e) =>
-                      setInnings((prev) => {
-                        const updatedInnings = [...prev];
-                        updatedInnings[index].away =
-                          Math.max(
-                            0,
-                            Number(e.target.value)
-                          );
-                        calculateTotalscores();
-                        return updatedInnings;
-                      })
-                    }
-                  />
-                </Td>
-              ))}
-              <Td>{awayTotalScore}</Td>
-              <Td>
-                <InningInput
-                  type="number"
-                  value={awayTotalHits}
-                  onChange={(e) =>
-                    setAwayTotalHits(
-                      Math.max(0, Number(e.target.value))
-                    )
-                  }
-                />
-              </Td>
-              <Td>
-                <InningInput
-                  type="number"
-                  value={awayTotalErrors}
-                  onChange={(e) =>
-                    setAwayTotalErrors(
-                      Math.max(0, Number(e.target.value))
-                    )
-                  }
-                />
-              </Td>
-            </tr>
-            <tr>
               <Td>Home</Td>
               {innings.map((inning, index) => (
                 <Td key={index}>
                   <InningInput
                     type="number"
+                    min="0"
                     value={inning.home}
                     onChange={(e) =>
-                      setInnings((prev) => {
-                        const updatedInnings = [...prev];
-                        updatedInnings[index].home =
-                          Math.max(
-                            0,
-                            Number(e.target.value)
-                          );
-                        calculateTotalscores();
-                        return updatedInnings;
-                      })
+                      handleInputChange(
+                        index,
+                        'home',
+                        e.target.value
+                      )
                     }
                   />
                 </Td>
@@ -170,6 +180,7 @@ export default function AddGamePage() {
               <Td>
                 <InningInput
                   type="number"
+                  min="0"
                   value={homeTotalHits}
                   onChange={(e) =>
                     setHomeTotalHits(
@@ -181,9 +192,54 @@ export default function AddGamePage() {
               <Td>
                 <InningInput
                   type="number"
+                  min="0"
                   value={homeTotalErrors}
                   onChange={(e) =>
                     setHomeTotalErrors(
+                      Math.max(0, Number(e.target.value))
+                    )
+                  }
+                />
+              </Td>
+            </tr>
+            <tr>
+              <Td>Away</Td>
+              {innings.map((inning, index) => (
+                <Td key={index}>
+                  <InningInput
+                    type="number"
+                    min="0"
+                    value={inning.away}
+                    onChange={(e) =>
+                      handleInputChange(
+                        index,
+                        'away',
+                        e.target.value
+                      )
+                    }
+                  />
+                </Td>
+              ))}
+              <Td>{awayTotalScore}</Td>
+              <Td>
+                <InningInput
+                  type="number"
+                  min="0"
+                  value={awayTotalHits}
+                  onChange={(e) =>
+                    setAwayTotalHits(
+                      Math.max(0, Number(e.target.value))
+                    )
+                  }
+                />
+              </Td>
+              <Td>
+                <InningInput
+                  type="number"
+                  min="0"
+                  value={awayTotalErrors}
+                  onChange={(e) =>
+                    setAwayTotalErrors(
                       Math.max(0, Number(e.target.value))
                     )
                   }
@@ -209,19 +265,19 @@ const Container = styled.div`
 `;
 
 const Title = styled.h2`
-  font-size: 2rem;
+  font-size: 2.5rem;
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   color: #1f2937;
 `;
 
 const Form = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 1rem;
 `;
 
 const Label = styled.label`
-  margin-bottom: 1rem;
   font-weight: bold;
   color: #374151;
 `;
@@ -232,6 +288,7 @@ const Input = styled.input`
   margin-top: 0.25rem;
   border: 1px solid #d1d5db;
   border-radius: 4px;
+  box-sizing: border-box;
 `;
 
 const Scoreboard = styled.table`
@@ -249,26 +306,32 @@ const Td = styled.td`
 `;
 
 const InningInput = styled.input`
-  width: 50px;
+  width: 3rem;
   padding: 0.25rem;
   text-align: center;
   border: 1px solid #d1d5db;
   border-radius: 4px;
+  box-sizing: border-box;
 `;
 
 const Button = styled.button`
   width: 30%;
-  padding: 1rem;
   margin: 1.5rem auto 0;
-  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
   font-weight: bold;
   color: #ffffff;
-  background-color: #1f2937;
+  background-color: #2563eb;
+  border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 
   &:hover {
-    background-color: #4b5563;
+    background-color: #1d4ed8;
+  }
+
+  &:active {
+    background-color: #1e3a8a;
   }
 `;
