@@ -13,7 +13,6 @@ export default function EditGamePage({
   params: Promise<{ id: string }>;
 }) {
   const { id: gameId } = use(params);
-
   const [date, setDate] = useState('');
   const [homeTeam, setHomeTeam] = useState('');
   const [awayTeam, setAwayTeam] = useState('');
