@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import api from '@lib/api';
 import { useRouter } from 'next/navigation';
+import type { GameData } from 'types/types';
 
 export default function AddGamePage() {
   const [date, setDate] = useState('');
@@ -20,10 +21,10 @@ export default function AddGamePage() {
   );
 
   const router = useRouter();
-
+  
   const handleSave = async () => {
     try {
-      const data = {
+      const data: GameData = {
         date,
         home_team: homeTeam,
         away_team: awayTeam,
@@ -33,13 +34,13 @@ export default function AddGamePage() {
         away_total_hits: awayTotalHits,
         home_total_errors: homeTotalErrors,
         away_total_errors: awayTotalErrors,
-        ...Object.fromEntries(
-          innings.flatMap((inning, index) => [
-            [`home_inning_${index + 1}`, inning.home],
-            [`away_inning_${index + 1}`, inning.away],
-          ])
-        ),
       };
+  
+      innings.forEach((inning, index) => {
+        data[`home_inning_${index + 1}`] = inning.home;
+        data[`away_inning_${index + 1}`] = inning.away;
+      });
+      
       await api.post('/games', data);
       router.push('/games');
     } catch (error) {
