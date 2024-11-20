@@ -33,7 +33,12 @@ export default function GameDetailPage({
     fetchGame();
   }, [gameId]);
 
-  if (!game) return <p>Loading...</p>;
+  if (!game)
+    return (
+      <LoadingContainer>
+        <LoadingText>Loading...</LoadingText>
+      </LoadingContainer>
+      );
 
   return (
     <Container>
@@ -159,5 +164,32 @@ const BackLink = styled(Link)`
 
   &:hover {
     background-color: #1d4ed8;
+  }
+`;
+
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f3f4f6;
+`;
+
+const LoadingText = styled.p`
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #4b5563;
+  animation: pulse 1.5s infinite;
+
+  @keyframes pulse {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+    100% {
+      opacity: 1;
+    }
   }
 `;
