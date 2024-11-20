@@ -95,7 +95,7 @@ export default function GameDetailPage({
         </tbody>
       </Scoreboard>
       <ButtonContainer>
-        <BackLink href="/games">Back to games</BackLink>
+        <BackLink href="/games">一覧へ戻る</BackLink>
       </ButtonContainer>
     </Container>
   );
