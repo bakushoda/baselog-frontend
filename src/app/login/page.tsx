@@ -6,6 +6,8 @@ import api from '@lib/api';
 import { useRouter } from 'next/navigation';
 import type { LoginResponse } from 'types/types';
 
+//To do: ログインしているかどうかの判定を行う
+
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
